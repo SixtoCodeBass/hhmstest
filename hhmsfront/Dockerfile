@@ -1,17 +1,23 @@
-FROM node:19.3.0-alpine3.16
-
+FROM node:17-alpine3.15 AS builder
+# Set working directory
 WORKDIR /app
+# Copy all files from current directory to working dir in image
+COPY . .
+# install node modules and build assets
+RUN npm install && npm run build
 
-COPY package.json ./
-RUN npm install
+# nginx state for serving content
+FROM nginx:alpine
 
-COPY . ./
+RUN rm /etc/nginx/conf.d/default.conf
 
-# EXPOSE [Port you mentioned in the vite.config file]
+COPY nginx.conf /etc/nginx/conf.d
 
-#EXPOSE 3000
-RUN npm run build
-
-#CMD ["npm", "run", "dev"]
-
- 
+# Set working directory to nginx asset directory
+WORKDIR /usr/share/nginx/html
+# Remove default nginx static assets
+RUN rm -rf ./*
+# Copy static assets from builder stage
+COPY --from=builder /app/build .
+# Containers run nginx with global directives and daemon off
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
