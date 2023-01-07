@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       network: host
     ports:
-      - 8080:8080
+      - 9090:9090
     environment:
       spring.profiles.active: prod
       db.url: oracle:thin:@//zen_lumiere:1521/XEPDB1
