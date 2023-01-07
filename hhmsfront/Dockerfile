@@ -1,23 +1,13 @@
-FROM node:17-alpine3.15 AS builder
-# Set working directory
+# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
+FROM tiangolo/node-frontend:10 as build-stage
 WORKDIR /app
-# Copy all files from current directory to working dir in image
-COPY . .
-# install node modules and build assets
-RUN npm install && npm run build
-
-# nginx state for serving content
-FROM nginx:alpine
-
-RUN rm /etc/nginx/conf.d/default.conf
-
-COPY nginx.conf /etc/nginx/conf.d
-
-# Set working directory to nginx asset directory
-WORKDIR /usr/share/nginx/html
-# Remove default nginx static assets
-RUN rm -rf ./*
-# Copy static assets from builder stage
-COPY --from=builder /app/build .
-# Containers run nginx with global directives and daemon off
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+COPY package*.json /app/
+RUN npm install
+COPY ./ /app/
+RUN CI=true npm test
+RUN npm run build
+# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
+FROM nginx:1.15
+COPY --from=build-stage /app/build/ /usr/share/nginx/html
+# Copy the default nginx.conf provided by tiangolo/node-frontend
+COPY --from=build-stage /nginx.conf /etc/nginx/conf.d/default.conf
