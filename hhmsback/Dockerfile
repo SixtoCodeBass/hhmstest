@@ -8,5 +8,5 @@ COPY .mvn .mvn
 # Copy the pom.xml file
 COPY pom.xml .
 EXPOSE 9090
-COPY target/hhmsback-0.0.1-SNAPSHOT.jar /app.jar
+COPY target/HHMSBack-0.0.1-SNAPSHOT.jar /app.jar
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
