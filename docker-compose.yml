@@ -5,10 +5,10 @@ services:
       dockerfile: Dockerfile
       network: host
     ports:
-      - 9090:9090
+      - 8080:8080
     environment:
       spring.profiles.active: prod
-      db.url: oracle:thin:@//zen_lumiere:1521/XEPDB1
+      db.url: oracle:thin:@//eloquent_benz:1521/XEPDB1
       db.username: hhms
       db.password: hhms
     networks:
