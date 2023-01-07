@@ -1,6 +1,6 @@
 FROM node:19.3.0-alpine3.16
 
-WORKDIR /hhmmsfront
+WORKDIR /hhmms
 
 COPY package.json ./
 RUN npm install
