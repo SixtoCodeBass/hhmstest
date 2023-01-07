@@ -1,0 +1,66 @@
+services:
+  back-end:
+    build:
+      context: hhmsback
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - 8080:8080
+    environment:
+      spring.profiles.active: prod
+      db.url: oracle:thin:@//zen_lumiere:1521/XEPDB1
+      db.username: hhms
+      db.password: hhms
+    networks:
+      - submission-app
+    
+  front-end:
+    build:
+      context: hhmsfront
+      dockerfile: Dockerfile
+    expose:
+      - "3000"
+    ports:
+      - 3000:3000
+    depends_on:
+      - back-end
+    networks:
+      - submission-app
+  
+  webserver:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - front-end
+    networks:
+      - submission-app
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf:/etc/letsencrypt
+    command:
+      - renew
+        #      - certonly
+        #      - --webroot
+        #      - -w
+        #      - /var/www/certbot/
+        #      - --email=trevor@coderscampus.com
+        #      - --agree-tos
+        #      - --no-eff-email
+        #      - -d
+        #      - assignments.coderscampus.com
+
+volumes:
+  cert_home:
+
+networks:
+  submission-app:
