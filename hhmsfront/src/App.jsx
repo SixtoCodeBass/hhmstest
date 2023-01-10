@@ -9,6 +9,7 @@ import Register from "./page/public/Register";
 import SoftLogin from "./page/public/SoftLogin";
 import ValidateAccount from "./page/public/ValidateAccount"
 import NotFound from "./page/NotFound";
+import { AdminLandingPage } from "./page/private/AdminLandingPage";
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="validate/:id" element={<ValidateAccount />} />
             <Route path="*" element={<NotFound />}/>
+          </Route>
+
+          <Route path="admin-panel" element={<AdminLandingPage/>}>
+
           </Route>
           {/* <Route path="/landing-page" element={<LandingPageLayout />}></Route>
           <Route path="/manager" element={<ManagerLayout />}></Route>
